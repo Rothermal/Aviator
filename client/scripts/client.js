@@ -97,11 +97,12 @@ function createScene(){
 }
 function handleWindowResize (){
     // update height and width of the renderer and the camera
+    console.log('hit window resize');
     HEIGHT = window.innerHeight;
     WIDTH = window.innerWidth;
     renderer.setSize(WIDTH,HEIGHT);
     camera.aspect = WIDTH/HEIGHT;
-    camera.updateProjectMatrix();
+    camera.updateProjectionMatrix();
 }
 
 
