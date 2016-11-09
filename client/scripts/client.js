@@ -8,9 +8,12 @@ var WIDTH;
 var container;
 var camera;
 var renderer;
+var hemisphereLight;
+var shadowLight;
 var geometry;
 var material;
 var mesh;
+var sea;
 var Colors = {
     red:0xf25346,
     blue:0x68c3c0,
@@ -108,14 +111,58 @@ function handleWindowResize (){
 
 function createLights(){
     console.log("Creating some Lights");
+    // a hemisohere light is a gradient colored light;
+    // the first parameter is the sky color, the second parameter is the ground color
+    // the third parameter is the intensity of the light
+    hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x0000000, '.9');
+
+    // a directional light shines from a specific direction
+    // it acts like the sun that means that all the rays produced are parallel
+    // assuming first parameter is color and second parameter is intensity...
+    shadowLight = new THREE.DirectionalLight(0xffffff, '.9');
+
+    // set the posistion of the light
+    shadowLight.position.set(150,350,350);
+
+    // allow shadow casting
+    shadowLight.castShadow = true;
+
+    //define the visible area of the projected shadow
+    shadowLight.shadow.camera.left = -400;
+    shadowLight.shadow.camera.right = 400;
+    shadowLight.shadow.camera.top = 400;
+    shadowLight.shadow.camera.bottom = -400;
+    shadowLight.shadow.camera.near = 1;
+    shadowLight.shadow.camera.far = 1000;
+
+    // define the resolution of the shadow; the higher the better,
+    // but also the more expensive and less performant
+    shadowLight.shadow.mapSize.width = 2048;
+    shadowLight.shadow.mapSize.height = 2048;
+
+    // to activate the lights, add them to the scene
+    scene.add(hemisphereLight);
+    scene.add(shadowLight);
+
 }
 
 function createPlane (){
     console.log("Make a plane");
 }
 
+
+
 function createSea(){
     console.log("Water water everywhere, but not a drop to drink");
+    // first lets define a sea object
+    sea = new Sea();
+
+    // push it a little bit at the bottom of the scene
+    sea.mesh.position.y = -600;
+
+    // add it to the scene;
+    scene.add(sea.mesh);
+
 }
 
 function createSky(){
