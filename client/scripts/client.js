@@ -115,12 +115,12 @@ function createLights(){
     // a hemisohere light is a gradient colored light;
     // the first parameter is the sky color, the second parameter is the ground color
     // the third parameter is the intensity of the light
-    hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x0000000, '.9');
+    hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x0000000, (9/10));
 
     // a directional light shines from a specific direction
     // it acts like the sun that means that all the rays produced are parallel
     // assuming first parameter is color and second parameter is intensity...
-    shadowLight = new THREE.DirectionalLight(0xffffff, '.9');
+    shadowLight = new THREE.DirectionalLight(0xffffff, (9/10));
 
     // set the posistion of the light
     shadowLight.position.set(150,350,350);
@@ -146,9 +146,89 @@ function createLights(){
     scene.add(shadowLight);
 
 }
+var Airplane = function(){
+
+    this.mesh = new THREE.Object3D();
+
+    // create the cabin
+    var geomCockpit = new THREE.BoxGeometry(60,50,50,1,1,1);
+    var matCockpit = new THREE.MeshPhongMaterial({
+        color:Colors.red,
+        shading:THREE.FlatShading
+    });
+    var cockpit = new THREE.Mesh(geomCockpit, matCockpit);
+    cockpit.castShadow = true;
+    cockpit.receiveShadow = true;
+    this.mesh.add(cockpit);
+
+    // create the engine
+    var geomEngine = new THREE.BoxGeometry(20,50,50,1,1,1);
+    var matEngine = new THREE.MeshPhongMaterial({
+       color:Colors.white,
+       shading : THREE.FlatShading
+    });
+    var engine = new THREE.Mesh(geomEngine, matEngine);
+    engine.position.x = 40;
+    engine.castShadow = true;
+    engine.recieveShadow = true;
+    this.mesh.add(engine);
+
+    // create the tail
+    var geomTailPlane = new THREE.BoxGeometry(15,20,5,1,1,1);
+    var matTailPlane = new THREE.MeshPhongMaterial({
+        color:Colors.red,
+        shading : THREE.FlatShading
+    });
+    var tailPlane = new THREE.Mesh(geomTailPlane,matTailPlane);
+    tailPlane.position.set(-35,25,0);
+    tailPlane.castShadow = true;
+    tailPlane.receiveShadow = true;
+    this.mesh.add(tailPlane);
+
+    // creat the wing
+    var geomSideWing = new THREE.BoxGeometry(40,8,150,1,1,1);
+    var matSideWing = new THREE.MeshPhongMaterial({
+        color:Colors.red,
+        shading : THREE.FlatShading
+    });
+    var sideWing = new THREE.Mesh(geomSideWing,matSideWing);
+    sideWing.castShadow = true;
+    sideWing.receiveShadow = true;
+    this.mesh.add(sideWing);
+    // propeller
+    var geomPropeller = new THREE.BoxGeometry(20,10,10,1,1,1);
+    var matPropeller = new THREE.MeshPhongMaterial({
+        color:Colors.brown,
+        shading:THREE.FlatShading
+    });
+    this.propeller = new THREE.Mesh(geomPropeller,matPropeller);
+    this.propeller.castShadow = true;
+    this.propeller.receiveShadow = true;
+
+    // blades
+    var geomBlade = new THREE.BoxGeometry(1,100,20,1,1,1);
+    var matBlade = new THREE.MeshPhongMaterial({
+        color:Colors.brownDark,
+        shading:THREE.FlatShading
+    });
+
+    var blade = new THREE.Mesh(geomBlade,matBlade);
+    blade.position.set(8,0,0);
+    blade.castShadow = true;
+    blade.receiveShadow = true;
+    this.propeller.add(blade);
+    this.propeller.position.set(50,0,0);
+    this.mesh.add(this.propeller);
+};
+
+var airplane;
 
 function createPlane (){
     console.log("Make a plane");
+    airplane = new Airplane();
+    airplane.mesh.scale.set((1/4),(1/4),(1/4));
+    airplane.mesh.position.y = 100;
+    scene.add(airplane.mesh);
 }
 
 Sea = function(){
@@ -166,7 +246,7 @@ Sea = function(){
     var mat = new THREE.MeshPhongMaterial({
        color: Colors.blue,
        transparent: true,
-       opacity: 6,
+       opacity: (6/10),
        shading:THREE.FlatShading
     });
     // to create an object in THREE.js we have to create a mesh
