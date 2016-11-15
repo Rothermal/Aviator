@@ -14,6 +14,7 @@ var geometry;
 var material;
 var mesh;
 var sea;
+var mousePos={x:0,y:0};
 var Colors = {
     red:0xf25346,
     blue:0x68c3c0,
@@ -38,11 +39,25 @@ function init(){
         createSea();
         createSky();
 
-        renderer.render(scene, camera);
+    // event listener
+    document.addEventListener('mousemove',handleMouseMove, false);
 
     // start a Loop that will update the objects positions
     // and render the scene on each frame
     loop();
+}
+function handleMouseMove(event){
+    // here we are converting the mouse position value reciced
+    // to a normalized value varying vetween -1 and 1;
+    // this is the formula for the horizontal axis:
+    var tx = -1 + (event.clientX / WIDTH)*2;
+
+    // for the vertical axis we need to inverse the formula
+    // because the 2d y-axis goes the oppiste direction of the 3d y-axis
+
+    var ty = 1 - (event.clientY / HEIGHT)*2;
+    mousePos = {x:tx, y:ty};
+
 }
 
 function createScene(){
@@ -365,7 +380,44 @@ function createSky(){
     scene.add(sky.mesh);
 }
 
+// animation
 function loop(){
     console.log("You Spin me right round baby right round, like a record baby");
+    // rotate the propeller, the sea and the sky
+    airplane.propeller.rotation.x+= (3/10);
+    sea.mesh.rotation.z += (5/1000);
+    sky.mesh.rotation.z += (1/100);
+
+    updatePlane();
+    // render the scene
+    renderer.render(scene,camera);
+
+    // call the loop function again
+    requestAnimationFrame(loop);
+
 }
 
+function updatePlane(){
+    // lets move the airplane between -100 and 100 on the horizontal axis
+    // and between 25 and 175 on the vertical axis
+    // depending on the mouse position which ranges between -1 and 1 on both axes
+    // to achieve that we will use a normalize function ( see below)
+    var targetX = normalize(mousePos.x,-1,1,-100,100);
+    var targetY = normalize(mousePos.y,-1,1,25,175);
+
+    // update the planes position
+    airplane.mesh.position.y = targetY;
+    airplane.mesh.position.x = targetX;
+    airplane.propeller.rotation.x+= 0.3;
+
+}
+function normalize(v,vmin,vmax,tmin,tmax){
+
+    var nv = Math.max(Math.min(v,vmax),vmin);
+    var dv = vmax-vmin;
+    var pc = (nv-vmin)/dv;
+    var dt = tmax - tmin;
+    var tv = tmin + (pc*dt);
+    return tv;
+
+}
